@@ -116,6 +116,13 @@ In case this is a false positive, the "--allow-self-closing-script" flag can be 
         })
     }
 
+    pub fn prepend_html(&mut self, selector: &str, html: &str) -> Result<()> {
+        self.select_mut(selector, |el| {
+            el.prepend(html, lol_html::html_content::ContentType::Html);
+            Ok(())
+        })
+    }
+
     pub fn replace_with_html(&mut self, selector: &str, html: &str) -> Result<()> {
         self.select_mut(selector, |el| {
             el.replace(html, lol_html::html_content::ContentType::Html);

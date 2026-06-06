@@ -98,10 +98,11 @@ impl ServeSystem {
         .await?;
 
         // Open the browser.
-        if self.cfg.open && build_res.is_ok() {
-            if let Err(err) = open::that(self.open_http_addr) {
-                tracing::error!(error = ?err, "error opening browser");
-            }
+        if self.cfg.open
+            && build_res.is_ok()
+            && let Err(err) = open::that(self.open_http_addr)
+        {
+            tracing::error!(error = ?err, "error opening browser");
         }
         drop(self.shutdown_tx); // Drop the broadcast channel to ensure it does not keep the system alive.
 
@@ -279,7 +280,7 @@ async fn run_server(
     // Build a shutdown signal for the axum server.
     let shutdown_handle = Handle::new();
 
-    let shutdown = |handle: Handle| async move {
+    let shutdown = |handle: Handle<std::net::SocketAddr>| async move {
         // Any event on this channel, even a drop, should trigger shutdown.
         let _res = shutdown_rx.recv().await;
         tracing::debug!("server is shutting down");
